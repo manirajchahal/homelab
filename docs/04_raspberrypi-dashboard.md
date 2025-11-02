@@ -1,1 +1,2 @@
-# Dashboard overview, touchscreen layout, Docker stack
+### `docs/04_raspberrypi-dashboard.md`
+```markdown
