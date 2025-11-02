@@ -1,4 +1,3 @@
----
 ### `docs/00_overview.md`
 ```markdown
 # Overview
