@@ -1,0 +1,14 @@
+# Secrets & local stuff
+configs/raspberrypi/vaultwarden/vaultwarden.env
+configs/raspberrypi/.env
+
+# Heavy/temporary
+*.tgz
+*.tar.gz
+*.zip
+
+# Docker volumes (if you bind-mount them)
+configs/raspberrypi/*/data/
+configs/raspberrypi/adguard/work/
+configs/raspberrypi/adguard/conf/
+configs/raspberrypi/portainer-data/
