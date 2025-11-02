@@ -1,1 +1,2 @@
-# Metrics via Prometheus, Grafana dashboards, Kuma alerts
+### `docs/06_monitoring-and-alerts.md`
+```markdown
