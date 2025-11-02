@@ -1,1 +1,63 @@
-# Master compose for the raspberry pi.
+# Starter command:
+
+version: "3.9"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports: ["9000:9000"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer-data:/data
+    restart: unless-stopped
+
+  nodered:
+    image: nodered/node-red:latest
+    ports: ["1880:1880"]
+    volumes:
+      - ./node-red:/data
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus:/prometheus
+    restart: unless-stopped
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    ports: ["3001:${KUMA_PORT:-3001}"]
+    volumes:
+      - ./uptime-kuma:/app/data
+    restart: unless-stopped
+
+  adguard:
+    image: adguard/adguardhome:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3002:3000"
+    volumes:
+      - ./adguard/work:/opt/adguardhome/work
+      - ./adguard/conf:/opt/adguardhome/conf
+    restart: unless-stopped
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    ports: ["8080:80"]
+    env_file: ./vaultwarden/vaultwarden.env
+    volumes:
+      - ./vaultwarden/data:/data
+    restart: unless-stopped
