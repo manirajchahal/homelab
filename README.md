@@ -4,6 +4,11 @@ Welcome to my personal homelab: A Raspberry Pi 5–driven control and monitoring
 
 ---
 
+## 🖼️ Image (To be placed)
+
+
+---
+
 ## ⚙️ Components
 
 | Device | Purpose | OS | IP |
