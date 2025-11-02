@@ -1,1 +1,2 @@
-# Node setup, clustering steps, LXC vs VM use, storage
+### `docs/03_proxmox-cluster.md`
+```markdown
