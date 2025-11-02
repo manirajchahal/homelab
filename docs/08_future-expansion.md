@@ -1,1 +1,2 @@
-# NAS, SIEM, automation agents, etc.
+### `docs/08_future-expansion.md`
+```markdown
