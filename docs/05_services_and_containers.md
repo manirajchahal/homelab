@@ -29,4 +29,4 @@
 
 ## Vaultwarden
 - Purpose: Password manager
-- Env: `configs/raspberrypi/vaultwarden/vaultwarden.env` (not committed)
+- Env: `configs/raspberrypi/vaultwarden/vaultwarden.env` (env.example provided)
