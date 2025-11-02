@@ -1,5 +1,5 @@
 ### `docs/00_overview.md`
-```markdown
+
 # Overview
 
 This repo documents my homelab: physical rack, network, Proxmox cluster, Raspberry Pi services, monitoring, and backup/restore.

@@ -1,5 +1,4 @@
 ### `docs/01_rack-setup.md`
-```markdown
 
 # Rack Setup (U-by-U)
 
