@@ -1,63 +1,149 @@
-# Starter command:
+networks:
+  homelab:
+    driver: bridge
 
-version: "3.9"
+volumes:
+  portainer_data:
+  grafana_data:
+  uptimekuma_data:
+
 services:
+
+  # ---- 1) Portainer CE ----
   portainer:
     image: portainer/portainer-ce:latest
-    ports: ["9000:9000"]
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./portainer-data:/data
-    restart: unless-stopped
+      - portainer_data:/data
+    networks: [homelab]
 
+  # ---- 2) Node-RED ----
   nodered:
     image: nodered/node-red:latest
-    ports: ["1880:1880"]
-    volumes:
-      - ./node-red:/data
+    restart: unless-stopped
     environment:
       - TZ=${TZ}
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana:latest
-    ports: ["3000:3000"]
+    ports:
+      - "1880:1880"
     volumes:
-      - ./grafana:/var/lib/grafana
-    environment:
-      - TZ=${TZ}
-    restart: unless-stopped
+      - /opt/homelab/nodered:/data
+    networks: [homelab]
 
-  prometheus:
-    image: prom/prometheus:latest
-    ports: ["9090:9090"]
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus:/prometheus
-    restart: unless-stopped
-
-  uptime-kuma:
-    image: louislam/uptime-kuma:latest
-    ports: ["3001:${KUMA_PORT:-3001}"]
-    volumes:
-      - ./uptime-kuma:/app/data
-    restart: unless-stopped
-
+  # ---- 3) AdGuard Home ----
+  # Uses host network so it can own DNS port :53 cleanly
   adguard:
     image: adguard/adguardhome:latest
+    network_mode: host
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - /opt/homelab/adguard/work:/opt/adguardhome/work
+      - /opt/homelab/adguard/conf:/opt/adguardhome/conf
+    environment:
+      - TZ=${TZ}
+    # First-time UI: http://192.168.8.10:3000
+
+#  # ---- 4) Vaultwarden ----
+#  vaultwarden:
+#    image: vaultwarden/server:latest
+#    restart: unless-stopped
+#    environment:
+#      - DOMAIN=${VW_DOMAIN}
+#      - ADMIN_TOKEN=${VW_ADMIN_TOKEN}
+#      - SIGNUPS_ALLOWED=true
+#      - WEBSOCKET_ENABLED=false
+#      - ROCKET_WORKERS=2
+#      - TZ=${TZ}
+#    ports:
+#      - "8080:80"
+#    volumes:
+#      - /opt/homelab/vaultwarden:/data
+#    networks: [homelab]
+
+  # ---- 5) Prometheus ----
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    user: "0:0"
+    volumes:
+      - /opt/homelab/prometheus/config:/etc/prometheus
+      - /opt/homelab/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
+      - "9090:9090"
+    networks: [homelab]
+
+  # Node metrics for the Pi itself
+  node_exporter:
+    image: prom/node-exporter:latest
+    restart: unless-stopped
+    pid: host
+    network_mode: host
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - '/:/host:ro,rslave'
+
+
+  # cAdvisor
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: homelab-cadvisor-1
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:ro'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    networks: [homelab]
+
+
+
+  # ---- 6) Grafana ----
+  # NOTE: Grafana normally listens on 3000, but AdGuard UI also uses 3000 via host net.
+  # To avoid confusion, we expose Grafana on 3002.
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    ports:
       - "3002:3000"
     volumes:
-      - ./adguard/work:/opt/adguardhome/work
-      - ./adguard/conf:/opt/adguardhome/conf
-    restart: unless-stopped
+      - grafana_data:/var/lib/grafana
+      - /opt/homelab/grafana/provisioning:/etc/grafana/provisioning
+    networks: [homelab]
 
-  vaultwarden:
-    image: vaultwarden/server:latest
-    ports: ["8080:80"]
-    env_file: ./vaultwarden/vaultwarden.env
-    volumes:
-      - ./vaultwarden/data:/data
+  # ---- 7) Uptime-Kuma ----
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
     restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptimekuma_data:/app/data
+    networks: [homelab]
+
+  # ---- (Later) Proxmox PVE Exporter ----
+  # We'll add this AFTER we create the Proxmox API token and exporter config.
+  # pve_exporter:
+  #   image: prompve/prometheus-pve-exporter:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9221:9221"
+  #   volumes:
+  #     - /opt/homelab/pve_exporter/config.yml:/etc/prometheus/pve.yml:ro
+  #   networks: [homelab]
