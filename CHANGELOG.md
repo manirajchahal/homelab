@@ -12,3 +12,7 @@ All notable changes to this repo.
 ## [2025-11-04]
 - Started up all services on Raspberry Pi 5 through docker-compose.yml.
 - Configured uptime-kuma + prometheus.
+
+## [2025-11-07]
+### Added
+- Added new `camera-stream/` module for remote viewing of homelab LCD via USB webcam.
