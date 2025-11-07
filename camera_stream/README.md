@@ -1,7 +1,8 @@
 # Homelab Camera Stream (RTSP-only)
 
-This folder runs a USB webcam on a Raspberry Pi (or similar Linux host) and
-exposes it as an RTSP stream via MediaMTX + FFmpeg.
+This folder runs a USB webcam on a Raspberry Pi and exposes it as an RTSP stream via MediaMTX + FFmpeg.
+
+This is used to view the display on my physical homelab when configuring it remotely.
 
 ## Features
 - ✅ Simple config
