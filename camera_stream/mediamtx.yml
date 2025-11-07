@@ -1,0 +1,13 @@
+logLevel: info
+rtspDisable: false
+webrtcDisable: true
+hlsDisable: true
+
+paths:
+  cam:
+    # Start the USB cam feed right away
+    runOnInit: >
+      ffmpeg -f v4l2 -input_format mjpeg -framerate 30 -video_size 1920x1080
+      -i /dev/video0 -vcodec copy
+      -f rtsp rtsp://127.0.0.1:$RTSP_PORT/cam
+    runOnInitRestart: yes
