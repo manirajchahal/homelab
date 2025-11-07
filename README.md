@@ -4,7 +4,9 @@ Welcome to my personal homelab: A Raspberry Pi 5–driven control and monitoring
 
 ---
 
-## 🖼️ Image (To be placed)
+## 🖼️ Image
+
+![Homelab Image](assets/homelab_image.jpg)
 
 
 ---
