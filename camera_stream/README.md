@@ -21,3 +21,8 @@ To verify the camera exists:
 ```bash
 v4l2-ctl --list-devices
 ```
+---
+
+## Viewing Instructions
+VLC (LAN or Tailscale)
+- rtsp://(raspberry-pi-ip):8554/cam
