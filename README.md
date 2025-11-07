@@ -50,7 +50,7 @@ Welcome to my personal homelab: A Raspberry Pi 5–driven control and monitoring
 
 ```bash
 git clone https://github.com/manirajchahal/homelab-infrastructure.git
-cd homelab-infrastructure/configs/raspberrypi
+cd homelab/configs/raspberrypi
 docker compose up -d
 ```
 
