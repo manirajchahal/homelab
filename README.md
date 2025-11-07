@@ -1,12 +1,12 @@
 # homelab_infrastructure
 
-Welcome to my personal homelab: A Raspberry Pi 5–driven control and monitoring hub connected to two Proxmox mini-PC nodes, managed through a touchscreen dashboard.
+Welcome to my personal homelab: A Raspberry Pi 5–driven control and monitoring hub connected to two Proxmox mini-PC nodes, managed through a (WIP) touchscreen dashboard.
 
 ---
 
 ## 🖼️ Image
 
-![Homelab Image](assets/homelab_image.jpg)
+![Homelab Image](assets/images/homelab_image.jpg)
 
 
 ---
