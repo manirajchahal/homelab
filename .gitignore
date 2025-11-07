@@ -1,5 +1,5 @@
 # Secrets & local stuff
-configs/raspberrypi/vaultwarden/vaultwarden.env
+#configs/raspberrypi/vaultwarden/vaultwarden.env
 configs/raspberrypi/.env
 
 # Heavy/temporary
@@ -7,8 +7,29 @@ configs/raspberrypi/.env
 *.tar.gz
 *.zip
 
-# Docker volumes (if you bind-mount them)
+# Docker volumes
 configs/raspberrypi/*/data/
 configs/raspberrypi/adguard/work/
 configs/raspberrypi/adguard/conf/
 configs/raspberrypi/portainer-data/
+
+#Ignore Node-RED runtime junk
+
+/configs/raspberrypi/nodered/.npm/
+/configs/raspberrypi/nodered/.cache/
+/configs/raspberrypi/nodered/.config/
+/configs/raspberrypi/nodered/.config*.json
+/configs/raspberrypi/nodered/node_modules/
+/configs/raspberrypi/nodered/package-lock.json
+/configs/raspberrypi/nodered/.config*
+
+*/.npm/
+*/.cache/
+*/.config/
+
+
+# Backups/Temp Files
+
+*.save
+
+
