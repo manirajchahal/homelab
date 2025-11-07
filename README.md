@@ -48,7 +48,7 @@ Welcome to my personal homelab: A Raspberry Pi 5–driven control and monitoring
 ## 🪜 Quick Start
 
 ```bash
-git clone https://github.com/manirajchahal/homelab-infrastructure.git
+git clone https://github.com/manirajchahal/homelab.git
 cd homelab/configs/raspberrypi
 docker compose up -d
 ```
@@ -57,7 +57,7 @@ docker compose up -d
 
 ## 🔧 Notes
 
-- Every major component (Pi, Proxmox, Switch, Firewall) gets its **own config folder**.
+- Every major component (Pi, Proxmox, Switch, Firewall(WIP)) gets its **own config folder**.
 - `docs/` = readable documentation.
 - `configs/` = actual `.yml`, `.cfg`, or `.json` files.
 - `scripts/` =  automation logic (setup, backups, updates).
