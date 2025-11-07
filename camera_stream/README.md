@@ -7,7 +7,7 @@ This is used to view the display on my physical homelab when configuring it remo
 ## Features
 - ✅ Simple config
 - ✅ Only RTSP (no http, webrtc, hls, rtmp, srt)
-- ✅ Secure — access via Tailscale or LAN only
+- ✅ Secure: Access via Tailscale or LAN only
 - ✅ Lightweight (zero transcoding if your cam supports MJPEG)
 
 ---
