@@ -137,6 +137,21 @@ services:
       - uptimekuma_data:/app/data
     networks: [homelab]
 
+
+   # ---- 8) Camera-Stream ----
+
+  mediamtx:
+    image: bluenviron/mediamtx:latest-ffmpeg
+    devices:
+      - /dev/video0:/dev/video0
+    ports:
+      - "8554:8554"      # RTSP
+    volumes:
+      - '/opt/homelab/mediamtx.yml:/mediamtx.yml:ro'
+    restart: unless-stopped
+
+
+
   # ---- (Later) Proxmox PVE Exporter ----
   # We'll add this AFTER we create the Proxmox API token and exporter config.
   # pve_exporter:
