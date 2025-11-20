@@ -1,6 +1,7 @@
 # Secrets & local stuff
 #configs/raspberrypi/graphana/graphana.env
 configs/raspberrypi/.env
+*.log
 
 # Heavy/temporary
 *.tgz
@@ -10,6 +11,14 @@ configs/raspberrypi/.env
 # Docker volumes
 configs/raspberrypi/*/data/
 configs/raspberrypi/portainer-data/
+configs/raspberrypiprometheus/data/
+configs/raspberrypigrafana_data/
+configs/raspberrypiuptimekuma_data/
+configs/raspberrypiportainer_data/
+
+configs/raspberrypi/paperless/media/
+configs/raspberrypi/paperless/export/
+configs/raspberrypi/paperless/redis-data/
 
 
 */.npm/
