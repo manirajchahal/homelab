@@ -20,49 +20,67 @@ services:
       - portainer_data:/data
     networks: [homelab]
 
-  # ---- 2) Node-RED ----
-  nodered:
-    image: nodered/node-red:latest
+  # ---- 2) Paperless-ngx ----
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
     restart: unless-stopped
-    environment:
-      - TZ=${TZ}
+    depends_on:
+      - paperless-redis
     ports:
-      - "1880:1880"
-    volumes:
-      - /opt/homelab/nodered:/data
-    networks: [homelab]
-
-  # ---- 3) AdGuard Home ----
-  # Uses host network so it can own DNS port :53 cleanly
-  adguard:
-    image: adguard/adguardhome:latest
-    network_mode: host
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-    volumes:
-      - /opt/homelab/adguard/work:/opt/adguardhome/work
-      - /opt/homelab/adguard/conf:/opt/adguardhome/conf
+      - "8000:8000"              # http://<pi-ip>:8000
     environment:
-      - TZ=${TZ}
-    # First-time UI: http://192.168.8.10:3000
+      PAPERLESS_REDIS: redis://paperless-redis:6379
+      PAPERLESS_SECRET_KEY: "CHANGE_ME_TO_A_LONG_RANDOM_STRING"
+      PAPERLESS_TIME_ZONE: "America/New_York"
+      PAPERLESS_OCR_LANGUAGE: "eng"
+      # Links in emails, etc.
+      PAPERLESS_URL: "http://raspi5:8000"
+    volumes:
+      # SQLite DB + internal data
+      - ./paperless/data:/usr/src/paperless/data
+      # Stored documents
+      - ./paperless/media:/usr/src/paperless/media
+      # Exported backups
+      - ./paperless/export:/usr/src/paperless/export
+      # "Inbox" – drop PDFs to auto-import
+      - ./paperless/consume:/usr/src/paperless/consume
 
-#  # ---- 4) Vaultwarden ----
-#  vaultwarden:
-#    image: vaultwarden/server:latest
-#    restart: unless-stopped
-#    environment:
-#      - DOMAIN=${VW_DOMAIN}
-#      - ADMIN_TOKEN=${VW_ADMIN_TOKEN}
-#      - SIGNUPS_ALLOWED=true
-#      - WEBSOCKET_ENABLED=false
-#      - ROCKET_WORKERS=2
-#      - TZ=${TZ}
-#    ports:
-#      - "8080:80"
-#    volumes:
-#      - /opt/homelab/vaultwarden:/data
-#    networks: [homelab]
+  # Redis for Paperless-ngx
+  paperless-redis:
+    image: redis:7-alpine
+    container_name: homelab-1-paperless-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - ./paperless/redis-data:/data
+
+  # ---- 3) Dashy - Touchscreen Home ----
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: homelab-1-dashy
+    restart: unless-stopped
+    ports:
+      - "8080:80"                # http://<pi-ip>:8080
+    volumes:
+      # Create file: ./dashy/conf.yml
+      - ./dashy/conf.yml:/app/public/conf.yml
+    environment:
+      - NODE_ENV=production
+
+  # ---- 4) Glances - Pi/System Monitor ----
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    restart: unless-stopped
+    network_mode: host          # port 61208 of the Pi
+    pid: host
+    environment:
+      - GLANCES_OPT=--webserver
+    volumes:
+      # Lets Glances show Docker info
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [homelab]
 
   # ---- 5) Prometheus ----
   prometheus:
@@ -91,26 +109,7 @@ services:
     volumes:
       - '/:/host:ro,rslave'
 
-
-  # cAdvisor
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: homelab-cadvisor-1
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    volumes:
-      - '/:/rootfs:ro'
-      - '/var/run:/var/run:ro'
-      - '/sys:/sys:ro'
-      - '/var/lib/docker/:/var/lib/docker:ro'
-    networks: [homelab]
-
-
-
   # ---- 6) Grafana ----
-  # NOTE: Grafana normally listens on 3000, but AdGuard UI also uses 3000 via host net.
-  # To avoid confusion, we expose Grafana on 3002.
   grafana:
     image: grafana/grafana:latest
     restart: unless-stopped
@@ -121,7 +120,7 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=false
     ports:
-      - "3002:3000"
+      - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
       - /opt/homelab/grafana/provisioning:/etc/grafana/provisioning
@@ -145,20 +144,9 @@ services:
     devices:
       - /dev/video0:/dev/video0
     ports:
-      - "8554:8554"      # RTSP
+      - "8554:8554" # RTSP
     volumes:
       - '/opt/homelab/mediamtx.yml:/mediamtx.yml:ro'
     restart: unless-stopped
 
 
-
-  # ---- (Later) Proxmox PVE Exporter ----
-  # We'll add this AFTER we create the Proxmox API token and exporter config.
-  # pve_exporter:
-  #   image: prompve/prometheus-pve-exporter:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9221:9221"
-  #   volumes:
-  #     - /opt/homelab/pve_exporter/config.yml:/etc/prometheus/pve.yml:ro
-  #   networks: [homelab]
