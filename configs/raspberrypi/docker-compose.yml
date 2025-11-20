@@ -81,51 +81,7 @@ services:
       # Lets Glances show Docker info
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  # ---- 5) Prometheus ----
-  prometheus:
-    image: prom/prometheus:latest
-    restart: unless-stopped
-    user: "0:0"
-    volumes:
-      - /opt/homelab/prometheus/config:/etc/prometheus
-      - /opt/homelab/prometheus/data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.enable-lifecycle'
-    ports:
-      - "9090:9090"
-    networks: [homelab]
-
-  # Node metrics for the Pi itself
-  node_exporter:
-    image: prom/node-exporter:latest
-    restart: unless-stopped
-    pid: host
-    network_mode: host
-    command:
-      - '--path.rootfs=/host'
-    volumes:
-      - '/:/host:ro,rslave'
-
-  # ---- 6) Grafana ----
-  grafana:
-    image: grafana/grafana:latest
-    restart: unless-stopped
-    environment:
-      - TZ=${TZ}
-      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_AUTH_ANONYMOUS_ENABLED=false
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - /opt/homelab/grafana/provisioning:/etc/grafana/provisioning
-    networks: [homelab]
-
-  # ---- 7) Uptime-Kuma ----
+  # ---- 5) Uptime-Kuma ----
   uptime-kuma:
     image: louislam/uptime-kuma:latest
     restart: unless-stopped
@@ -136,7 +92,7 @@ services:
     networks: [homelab]
 
 
-   # ---- 8) Camera-Stream ----
+   # ---- 6) Camera-Stream ----
 
   mediamtx:
     image: bluenviron/mediamtx:latest-ffmpeg
