@@ -80,7 +80,6 @@ services:
     volumes:
       # Lets Glances show Docker info
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks: [homelab]
 
   # ---- 5) Prometheus ----
   prometheus:
@@ -148,5 +147,6 @@ services:
     volumes:
       - '/opt/homelab/mediamtx.yml:/mediamtx.yml:ro'
     restart: unless-stopped
+    networks: [homelab]
 
 
