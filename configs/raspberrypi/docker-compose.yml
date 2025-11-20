@@ -62,9 +62,6 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"                # http://<pi-ip>:8080
-    volumes:
-      # Create file: ./dashy/conf.yml
-      - ./dashy/conf.yml:/app/public/conf.yml
     environment:
       - NODE_ENV=production
 
