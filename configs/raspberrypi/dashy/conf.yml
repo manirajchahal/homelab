@@ -1,0 +1,161 @@
+pageInfo:
+  title: Mani's Homelab
+  description: Welcome to my dashboard!
+  navLinks:
+    - title: GitHub
+      path: https://github.com/Lissy93/dashy
+    - title: Documentation
+      path: https://dashy.to/docs
+
+appConfig:
+  theme: colorful
+  layout: auto
+  iconSize: large
+
+sections:
+  - name: Getting Started
+    icon: fas fa-rocket
+    items:
+      - &ref_0
+        title: Dashy Live
+        description: Development a project management links for Dashy
+        icon: https://i.ibb.co/qWWpD0v/astro-dab-128.png
+        url: https://live.dashy.to/
+        target: newtab
+        id: 0_1481_dashylive
+      - &ref_1
+        title: GitHub
+        description: Source Code, Issues and Pull Requests
+        url: https://github.com/lissy93/dashy
+        icon: favicon
+        id: 1_1481_github
+      - &ref_2
+        title: Docs
+        description: Configuring & Usage Documentation
+        provider: Dashy.to
+        icon: far fa-book
+        url: https://dashy.to/docs
+        id: 2_1481_docs
+      - &ref_3
+        title: Showcase
+        description: See how others are using Dashy
+        url: https://github.com/Lissy93/dashy/blob/master/docs/showcase.md
+        icon: far fa-grin-hearts
+        id: 3_1481_showcase
+      - &ref_4
+        title: Config Guide
+        description: See full list of configuration options
+        url: https://github.com/Lissy93/dashy/blob/master/docs/configuring.md
+        icon: fas fa-wrench
+        id: 4_1481_configguide
+      - &ref_5
+        title: Support
+        description: Get help with Dashy, raise a bug, or get in contact
+        url: https://github.com/Lissy93/dashy/blob/master/.github/SUPPORT.md
+        icon: far fa-hands-helping
+        id: 5_1481_support
+    filteredItems:
+      - *ref_0
+      - *ref_1
+      - *ref_2
+      - *ref_3
+      - *ref_4
+      - *ref_5
+
+  - name: Core Management
+    icon: fas fa-cog
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - &ref_6
+        title: Portainer
+        icon: fab fa-docker
+        url: http://192.168.8.10:9443
+        id: 0_1446_portainer
+      - &ref_7
+        title: Dashy
+        icon: fas fa-grip-horizontal
+        url: http://192.168.8.10:4000
+        id: 1_1446_dashy
+    filteredItems:
+      - *ref_6
+      - *ref_7
+
+  - name: Monitoring
+    icon: fas fa-desktop
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - &ref_8
+        title: Uptime Kuma
+        icon: fas fa-desktop
+        url: http://192.168.8.10:3001
+        id: 0_1062_uptimekuma
+      - &ref_9
+        title: Glances
+        icon: fas fa-chart-line
+        url: http://192.168.8.10:61208
+        id: 1_1062_glances
+    filteredItems:
+      - *ref_8
+      - *ref_9
+
+  - name: Services
+    icon: fas fa-server
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - &ref_10
+        title: Paperless-NGX
+        icon: fas fa-file
+        url: http://192.168.8.10:8000
+        id: 0_836_paperlessngx
+    filteredItems:
+      - *ref_10
+
+  - name: Hardware
+    icon: fab fa-raspberry-pi
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - &ref_11
+        title: Glances UI
+        icon: fab fa-raspberry-pi
+        url: http://192.168.8.10:61208
+        id: 0_814_glancesui
+    filteredItems:
+      - *ref_11
+    widgets:
+      - type: gl-current-cpu
+        label: CPU
+        options:
+          hostname: http://192.168.8.10:61208
+      - type: gl-current-mem
+        label: Memory
+        options:
+          hostname: http://192.168.8.10:61208
+      - type: gl-disk-space
+        label: Disk
+        options:
+          hostname: http://192.168.8.10:61208
+      - type: gl-network-traffic
+        label: Network
+        options:
+          hostname: http://192.168.8.10:61208
+          limit: 200
