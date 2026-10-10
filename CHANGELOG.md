@@ -14,7 +14,7 @@ All notable changes to this repo.
 ### Removed
 - Router configuration backup, purged from git history. Config dumps
   (`*.tar.gz`, `*.zip`, ...) are now gitignored.
-- Legacy router and firewall config folders (`legacy/2025-pi-cluster/configs/{router,firewall}`).
+- Legacy router, firewall and switch config folders (`legacy/2025-pi-cluster/configs/{router,firewall,switch}`).
 
 ## pve1 build log (2026)
 - 09-04: pve1 built; CT 100 arr-stack (Jellyfin, arrs, SABnzbd, Seerr).
