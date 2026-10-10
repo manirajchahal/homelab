@@ -19,7 +19,7 @@ filesystem so imports are hardlinks, not copies.
   TRaSH-guide quality profiles; Maintainerr cleans up watched media.
 - SABnzbd (usenet) is primary. qBittorrent behind gluetun is the fallback,
   with a 2-hour delay profile so usenet wins whenever it can.
-- Full compose, scripts and runbooks live in the private `ARR-Stack` repo.
+- Full compose, scripts and runbooks live in the private `arr-stack` repo.
 
 ## CT 102 - homepage (192.168.4.3)
 

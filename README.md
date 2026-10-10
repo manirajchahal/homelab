@@ -76,7 +76,7 @@ Every container is Debian with Docker Compose under `/opt/<stack>`.
 ```
 docs/                  How and why, one topic per file
 pve1/host/             Host files at their real paths (LXC configs, systemd units, scripts)
-pve1/ct100-arr-stack/  Pointer to the private ARR-Stack repo
+pve1/ct100-arr-stack/  Pointer to the private arr-stack repo
 pve1/ct102-homepage/   Homepage compose + config
 pve1/ct103-services/   Uptime Kuma / Scrutiny / Jellystat / ntfy / Paperless / IronRank compose
 pve1/ct104-valheim/    Valheim compose + BepInEx patcher hook
