@@ -1,0 +1,39 @@
+/* Subtle polish on top of the dark/slate theme. Self-contained: no external assets. */
+
+body {
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(56, 189, 248, 0.10), transparent 60%),
+    radial-gradient(1000px 500px at 85% 0%, rgba(129, 140, 248, 0.10), transparent 55%),
+    #0b1120;
+  background-attachment: fixed;
+}
+
+/* Service and bookmark cards: softer corners, gentle lift on hover */
+.service-card,
+.bookmark-card {
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.10);
+  backdrop-filter: blur(6px);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.service-card:hover,
+.bookmark-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(148, 163, 184, 0.28);
+  box-shadow: 0 8px 22px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* Group headings: quieter, wider tracking */
+#information-widgets + div h2,
+.services-group h2 {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  opacity: 0.62;
+}
+
+/* Header widgets sit a little lighter against the gradient */
+#information-widgets {
+  padding-bottom: 0.5rem;
+}

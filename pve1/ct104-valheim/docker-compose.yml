@@ -1,0 +1,51 @@
+# Valheim dedicated server. CROSSPLAY=true switches the backend to PlayFab so an
+# Xbox client can join (via the 6-digit join code, which changes on every server
+# restart). Progression is sped up with vanilla world modifiers rather than
+# BepInEx mods, because console clients cannot load mods.
+# World, backups and hooks live under ./config; the SteamCMD install under ./data.
+services:
+  valheim:
+    image: ghcr.io/community-valheim-tools/valheim-server
+    container_name: valheim
+    restart: unless-stopped
+    cap_add:
+      - sys_nice
+    stop_grace_period: 2m          # let the world save on stop
+    ports:
+      - "2456-2458:2456-2458/udp" # game, query, crossplay backend
+      - "8090:8090/tcp"           # join-code JSON for Homepage
+    volumes:
+      - ./config:/config
+      - ./data:/opt/valheim
+    environment:
+      TZ: ${TZ}
+      SERVER_NAME: Ravensfjord
+      WORLD_NAME: Ravensfjord
+      SERVER_PASS: ${SERVER_PASS}
+      SERVER_PUBLIC: "false"        # not in the community list; join code + password only
+      CROSSPLAY: "true"
+      # BepInEx: image installs the latest BepInExPack_Valheim from Thunderstore and rsyncs
+      # /config/bepinex/plugins/ into it on install/update. To re-sync after adding
+      # plugins: docker exec valheim touch /opt/valheim/dl/bepinex/merge, then restart.
+      BEPINEX: "true"
+      POST_BEPINEX_CONFIG_HOOK: /config/hooks/patchers.sh   # BepInEx/patchers sync (ServersideQoL)
+      # World modifiers (vanilla, synced to every client incl. Xbox). Lowercase only.
+      #   resources most = 3x drops       portals casual = ore through portals
+      #   deathpenalty casual = keep gear  raids less = fewer base raids
+      SERVER_ARGS: >-
+        -modifier resources most
+        -modifier portals casual
+        -modifier deathpenalty casual
+        -modifier raids less
+      BACKUPS: "true"
+      BACKUPS_CRON: "5 */2 * * *"    # zip of the world every 2 h -> /config/backups
+      BACKUPS_MAX_AGE: "7"           # days
+      # Built-in busybox httpd serving /opt/valheim/htdocs (status.json + joincode.json)
+      STATUS_HTTP: "true"
+      STATUS_HTTP_PORT: "8090"
+      # Every 'Session ... with join code NNNNNN ... is active with N player(s)' log
+      # line is piped to the hook, which writes joincode.json for the dashboard.
+      VALHEIM_LOG_FILTER_CONTAINS_JoinCode: "join code"
+      ON_VALHEIM_LOG_FILTER_CONTAINS_JoinCode: /config/hooks/joincode.sh
+      PRE_BOOTSTRAP_HOOK: /config/hooks/joincode.sh --starting   # container start
+      PRE_SERVER_RUN_HOOK: /config/hooks/joincode.sh --starting  # every server (re)start

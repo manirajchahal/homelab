@@ -1,0 +1,15 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - /opt/homepage/config:/app/config
+    env_file:
+      - .env
+    environment:
+      - TZ=America/New_York
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - HOMEPAGE_ALLOWED_HOSTS=192.168.4.3:3000,localhost:3000,homepage:3000,homepage.local:3000

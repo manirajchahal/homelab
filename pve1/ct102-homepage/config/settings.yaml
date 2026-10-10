@@ -1,0 +1,40 @@
+---
+title: Homelab
+description: pve1 - Proxmox homelab
+
+theme: dark
+color: slate
+headerStyle: boxedWidgets
+hideVersion: true
+showStats: true
+statusStyle: dot
+
+layout:
+  Media:
+    style: row
+    columns: 3
+    icon: mdi-play-circle-outline
+  Automation:
+    style: row
+    columns: 3
+    icon: mdi-robot-outline
+  Downloads:
+    style: row
+    columns: 2
+    icon: mdi-download-outline
+  Documents:
+    style: row
+    columns: 2
+    icon: mdi-file-document-outline
+  Games:
+    style: row
+    columns: 2
+    icon: mdi-sword-cross
+  Monitoring:
+    style: row
+    columns: 2
+    icon: mdi-heart-pulse
+  Infrastructure:
+    style: row
+    columns: 3
+    icon: mdi-server

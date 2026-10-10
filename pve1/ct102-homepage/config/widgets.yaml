@@ -1,0 +1,33 @@
+---
+- greeting:
+    text_size: 4xl
+    text: Homelab
+
+- datetime:
+    text_size: xl
+    format:
+      dateStyle: long
+      timeStyle: short
+      hour12: true
+
+# Live host metrics for pve1, straight from the Glances REST API running on the
+# hypervisor. cputemp/uptime/disk each add one reading to the header.
+- glances:
+    url: http://192.168.4.53:61208
+    version: 4
+    label: pve1
+    cputemp: true
+    uptime: true
+    disk: /
+
+- openmeteo:
+    label: Weather
+    latitude: 0.0      # set to your location
+    longitude: 0.0     # set to your location
+    units: imperial
+    cache: 5
+
+- search:
+    provider: duckduckgo
+    focus: false
+    target: _blank

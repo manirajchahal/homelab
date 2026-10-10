@@ -1,0 +1,222 @@
+---
+- Media:
+    - Jellyfin:
+        icon: jellyfin.svg
+        href: http://192.168.4.2:8096
+        description: Movies, TV and music
+        siteMonitor: http://192.168.4.2:8096
+        widget:
+          type: jellyfin
+          url: http://192.168.4.2:8096
+          key: {{HOMEPAGE_VAR_JELLYFIN_KEY}}
+          enableBlocks: true
+          enableNowPlaying: true
+          enableUser: true
+          showEpisodeNumber: true
+
+    - Seerr:
+        icon: jellyseerr.svg
+        href: http://192.168.4.2:5055
+        description: Request movies and shows
+        siteMonitor: http://192.168.4.2:5055
+        widget:
+          type: jellyseerr
+          url: http://192.168.4.2:5055
+          key: {{HOMEPAGE_VAR_SEERR_KEY}}
+
+    - Jellystat:
+        icon: jellystat.svg
+        href: http://192.168.4.4:3002
+        description: Playback statistics
+        siteMonitor: http://192.168.4.4:3002
+        widget:
+          type: jellystat
+          url: http://192.168.4.4:3002
+          key: {{HOMEPAGE_VAR_JELLYSTAT_KEY}}
+
+- Automation:
+    - Sonarr:
+        icon: sonarr.svg
+        href: http://192.168.4.2:8989
+        description: TV series
+        siteMonitor: http://192.168.4.2:8989
+        widget:
+          type: sonarr
+          url: http://192.168.4.2:8989
+          key: {{HOMEPAGE_VAR_SONARR_KEY}}
+          enableQueue: true
+
+    - Radarr:
+        icon: radarr.svg
+        href: http://192.168.4.2:7878
+        description: Movies
+        siteMonitor: http://192.168.4.2:7878
+        widget:
+          type: radarr
+          url: http://192.168.4.2:7878
+          key: {{HOMEPAGE_VAR_RADARR_KEY}}
+          enableQueue: true
+
+    - Bazarr:
+        icon: bazarr.svg
+        href: http://192.168.4.2:6767
+        description: Subtitles
+        siteMonitor: http://192.168.4.2:6767
+        widget:
+          type: bazarr
+          url: http://192.168.4.2:6767
+          key: {{HOMEPAGE_VAR_BAZARR_KEY}}
+
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: http://192.168.4.2:9696
+        description: Indexer manager
+        siteMonitor: http://192.168.4.2:9696
+        widget:
+          type: prowlarr
+          url: http://192.168.4.2:9696
+          key: {{HOMEPAGE_VAR_PROWLARR_KEY}}
+
+    - Maintainerr:
+        icon: maintainerr.svg
+        href: http://192.168.4.2:6246
+        description: Library cleanup rules
+        siteMonitor: http://192.168.4.2:6246
+        widget:
+          type: maintainerr
+          url: http://192.168.4.2:6246
+
+- Downloads:
+    - SABnzbd:
+        icon: sabnzbd.svg
+        href: http://192.168.4.2:8080
+        description: Usenet downloader
+        siteMonitor: http://192.168.4.2:8080
+        widget:
+          type: sabnzbd
+          url: http://192.168.4.2:8080
+          key: {{HOMEPAGE_VAR_SABNZBD_KEY}}
+
+    - qBittorrent:
+        icon: qbittorrent.svg
+        href: http://192.168.4.2:8085
+        description: Torrent fallback, via Surfshark
+        siteMonitor: http://192.168.4.2:8085
+        widget:
+          type: qbittorrent
+          url: http://192.168.4.2:8085
+          username: admin
+          password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
+
+    - VPN:
+        icon: gluetun.svg
+        description: Surfshark tunnel for qBittorrent
+        widget:
+          type: gluetun
+          url: http://192.168.4.2:8000
+          key: {{HOMEPAGE_VAR_GLUETUN_KEY}}
+
+    - Storage:
+        icon: mdi-harddisk
+        description: /data pool on arr-stack
+        widget:
+          type: customapi
+          url: http://192.168.4.2:8080/api?mode=queue&output=json&apikey={{HOMEPAGE_VAR_SABNZBD_KEY}}
+          refreshInterval: 60000
+          mappings:
+            - field:
+                queue: diskspacetotal1
+              label: Total
+              format: float
+              suffix: " GB"
+            - field:
+                queue: diskspace1
+              label: Free
+              format: float
+              suffix: " GB"
+
+- Documents:
+    - Paperless:
+        icon: paperless-ngx.svg
+        href: http://192.168.4.4:8000
+        description: Scanned document archive
+        siteMonitor: http://192.168.4.4:8000
+        widget:
+          type: paperlessngx
+          url: http://192.168.4.4:8000
+          key: {{HOMEPAGE_VAR_PAPERLESS_TOKEN}}
+
+    - ntfy:
+        icon: ntfy.svg
+        href: http://192.168.4.4:8082
+        description: Push notifications
+        siteMonitor: http://192.168.4.4:8082
+        widget:
+          type: ntfy
+          url: http://192.168.4.4:8082
+          topic: homelab
+
+- Games:
+    - Valheim:
+        icon: valheim.png
+        description: Ravensfjord - crossplay, 3x resources, modded
+        siteMonitor: http://192.168.4.5:8090/joincode.json
+        widget:
+          type: customapi
+          url: http://192.168.4.5:8090/joincode.json
+          refreshInterval: 30000
+          mappings:
+            - field: join_code
+              label: Join code
+            - field: password
+              label: Password
+            - field: players
+              label: Players
+              format: number
+            - field: state
+              label: State
+
+- Monitoring:
+    - Uptime Kuma:
+        icon: uptime-kuma.svg
+        href: http://192.168.4.4:3001
+        description: Service uptime and alerting
+        siteMonitor: http://192.168.4.4:3001
+        widget:
+          type: uptimekuma
+          url: http://192.168.4.4:3001
+          slug: homelab
+
+    - Scrutiny:
+        icon: scrutiny.svg
+        href: http://192.168.4.4:8081
+        description: Disk SMART health
+        siteMonitor: http://192.168.4.4:8081
+        widget:
+          type: scrutiny
+          url: http://192.168.4.4:8081
+
+- Infrastructure:
+    - Proxmox:
+        icon: proxmox.svg
+        href: https://192.168.4.53:8006
+        description: pve1 hypervisor
+        siteMonitor: https://192.168.4.53:8006
+        widget:
+          type: proxmox
+          url: https://192.168.4.53:8006
+          username: {{HOMEPAGE_VAR_PROXMOX_TOKEN_ID}}
+          password: {{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}
+          node: pve1
+
+    - arr-stack:
+        icon: mdi-package-variant-closed
+        href: https://192.168.4.53:8006
+        description: LXC 100 - media services
+        siteMonitor: http://192.168.4.2:8989
+
+    - services:
+        icon: mdi-cube-outline
+        href: https://192.168.4.53:8006
+        description: LXC 103 - monitoring and docs
+        siteMonitor: http://192.168.4.4:3001

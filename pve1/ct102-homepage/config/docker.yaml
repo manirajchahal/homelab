@@ -1,0 +1,4 @@
+---
+# Docker integration is intentionally empty.
+# Homepage talks to every service over its HTTP API instead, so it does not
+# need access to a Docker socket. See notes in /opt/homepage/README.md

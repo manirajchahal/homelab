@@ -1,32 +1,25 @@
-# Secrets & local stuff
-#configs/raspberrypi/graphana/graphana.env
-configs/raspberrypi/.env
-*.log
+# Secrets: every stack reads them from a .env; only .env.example is committed
+.env
+.env.*
+!.env.example
+secrets.yml
+*.key
+*.pem
 
-# Heavy/temporary
+# Archives: config dumps (router, firewall, PVE) can carry credentials
 *.tgz
 *.tar.gz
+*.tar.zst
 *.zip
 
-# Docker volumes
-configs/raspberrypi/*/data/
-configs/raspberrypi/portainer-data/
-configs/raspberrypiprometheus/data/
-configs/raspberrypigrafana_data/
-configs/raspberrypiuptimekuma_data/
-configs/raspberrypiportainer_data/
-
-configs/raspberrypi/paperless/media/
-configs/raspberrypi/paperless/export/
-configs/raspberrypi/paperless/redis-data/
-
-
-*/.npm/
-*/.cache/
-*/.config/
-
-
-# Backups/Temp Files
+# Local backups, logs, editor cruft
+*.bak
+*.bak-*
 *.save
+*.log
+.DS_Store
 
-
+# legacy/2025-pi-cluster: Docker volumes of the old Pi stack
+legacy/2025-pi-cluster/configs/raspberrypi/*/data/
+legacy/2025-pi-cluster/configs/raspberrypi/portainer-data/
+legacy/2025-pi-cluster/configs/raspberrypi/paperless/

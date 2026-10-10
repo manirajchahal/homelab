@@ -1,0 +1,19 @@
+[Unit]
+Description=Create NVIDIA device nodes before LXC guests start
+# The .run-installed driver does not create /dev/nvidia* via devtmpfs;
+# nvidia-modprobe does it on demand. CT 100 (arr-stack) bind-mounts these
+# nodes at start, so they must exist before pve-guests.service.
+After=systemd-modules-load.service
+Before=pve-guests.service
+ConditionPathExists=/usr/bin/nvidia-modprobe
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# -c 0: create /dev/nvidia0 + /dev/nvidiactl; -u: load nvidia_uvm and create /dev/nvidia-uvm*
+ExecStart=/usr/bin/nvidia-modprobe -c 0 -u
+# Sanity check: fails the unit visibly if the driver is broken (e.g. DKMS not built for this kernel)
+ExecStart=/usr/bin/nvidia-smi -L
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,185 @@
+# /opt/services — Uptime Kuma, Scrutiny, Jellystat, ntfy, Paperless-ngx
+# Host: CT 103 "services" @ 192.168.4.4
+#
+# Port map (all on 192.168.4.4):
+#   3001  Uptime Kuma
+#   8081  Scrutiny        (SMART dashboard; collector runs on the pve1 host)
+#   3002  Jellystat
+#   8082  ntfy
+#   8000  Paperless-ngx
+#   8095  IronRank        (gym tracker PWA, see ./ironrank/app/README.md)
+
+services:
+
+  # ---------- Uptime Kuma ----------
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    ports:
+      - 3001:3001
+    environment:
+      - TZ=${TZ}
+
+  # ---------- Scrutiny (hub) ----------
+  # "Hub and spoke" layout: this is the hub. The spoke (collector) runs on the
+  # Proxmox host, because that is where the physical NVMe actually lives.
+  scrutiny-influxdb:
+    image: influxdb:2.7
+    container_name: scrutiny-influxdb
+    restart: unless-stopped
+    volumes:
+      - scrutiny-influxdb:/var/lib/influxdb2
+
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-web
+    container_name: scrutiny
+    restart: unless-stopped
+    depends_on:
+      - scrutiny-influxdb
+    volumes:
+      - scrutiny-config:/opt/scrutiny/config
+    ports:
+      - 8081:8080
+    environment:
+      - TZ=${TZ}
+      - SCRUTINY_WEB_INFLUXDB_HOST=scrutiny-influxdb
+      - SCRUTINY_WEB_INFLUXDB_PORT=8086
+
+  # ---------- Jellystat ----------
+  jellystat-db:
+    image: postgres:16-alpine
+    container_name: jellystat-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=jfstat
+      - POSTGRES_USER=${JELLYSTAT_DB_USER}
+      - POSTGRES_PASSWORD=${JELLYSTAT_DB_PASSWORD}
+    volumes:
+      - jellystat-db:/var/lib/postgresql/data
+
+  jellystat:
+    image: cyfershepard/jellystat:latest
+    container_name: jellystat
+    restart: unless-stopped
+    depends_on:
+      - jellystat-db
+    environment:
+      - TZ=${TZ}
+      - POSTGRES_USER=${JELLYSTAT_DB_USER}
+      - POSTGRES_PASSWORD=${JELLYSTAT_DB_PASSWORD}
+      - POSTGRES_IP=jellystat-db
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=${JELLYSTAT_JWT_SECRET}
+    volumes:
+      - jellystat-backup:/app/backend/backup-data
+    ports:
+      - 3002:3000
+
+  # ---------- ntfy ----------
+  # NTFY_UPSTREAM_BASE_URL is what makes iOS push work on a self-hosted server:
+  # a wake-up ping (topic hash only, no message content) is relayed via ntfy.sh
+  # so Apple's push service can wake the app. Remove it and iOS gets nothing.
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command: serve
+    environment:
+      - TZ=${TZ}
+      - NTFY_BASE_URL=http://services.<your-tailnet>.ts.net:8082
+      - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      - NTFY_CACHE_DURATION=72h
+      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
+      - NTFY_AUTH_DEFAULT_ACCESS=read-write
+      - NTFY_ATTACHMENT_CACHE_DIR=/var/cache/ntfy/attachments
+      - NTFY_ENABLE_LOGIN=true
+    volumes:
+      - ntfy-cache:/var/cache/ntfy
+      - ntfy-lib:/var/lib/ntfy
+    ports:
+      - 8082:80
+
+  # ---------- Paperless-ngx ----------
+  paperless-broker:
+    image: redis:7-alpine
+    container_name: paperless-broker
+    restart: unless-stopped
+    volumes:
+      - paperless-redis:/data
+
+  paperless-db:
+    image: postgres:16-alpine
+    container_name: paperless-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=paperless
+      - POSTGRES_USER=${PAPERLESS_DB_USER}
+      - POSTGRES_PASSWORD=${PAPERLESS_DB_PASSWORD}
+    volumes:
+      - paperless-db:/var/lib/postgresql/data
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: unless-stopped
+    depends_on:
+      - paperless-db
+      - paperless-broker
+    ports:
+      - 8000:8000
+    volumes:
+      - paperless-data:/usr/src/paperless/data
+      - paperless-media:/usr/src/paperless/media
+      - paperless-export:/usr/src/paperless/export
+      - paperless-consume:/usr/src/paperless/consume
+    environment:
+      - PAPERLESS_REDIS=redis://paperless-broker:6379
+      - PAPERLESS_DBHOST=paperless-db
+      - PAPERLESS_DBNAME=paperless
+      - PAPERLESS_DBUSER=${PAPERLESS_DB_USER}
+      - PAPERLESS_DBPASS=${PAPERLESS_DB_PASSWORD}
+      - PAPERLESS_SECRET_KEY=${PAPERLESS_SECRET_KEY}
+      - PAPERLESS_URL=http://192.168.4.4:8000
+      - PAPERLESS_TIME_ZONE=${TZ}
+      - PAPERLESS_OCR_LANGUAGE=eng
+      - PAPERLESS_ADMIN_USER=${PAPERLESS_ADMIN_USER}
+      - PAPERLESS_ADMIN_PASSWORD=${PAPERLESS_ADMIN_PASSWORD}
+
+  # ---------- IronRank (ranked gym tracker PWA) ----------
+  # Static app + tiny sync API (server.py). App code in ./ironrank/app is
+  # deployed from pve1:/root/homelab/ironrank/deploy.sh; the phone data is
+  # mirrored to ./ironrank/data/state.json (+30 daily snapshots).
+  ironrank:
+    image: python:3.13-alpine
+    container_name: ironrank
+    restart: unless-stopped
+    working_dir: /app
+    command: ["python", "-u", "server.py"]
+    environment:
+      - TZ=${TZ}
+      - DATA_DIR=/data
+      - PORT=8095
+    volumes:
+      - ./ironrank/app:/app:ro
+      - ./ironrank/data:/data
+    ports:
+      - 8095:8095
+
+volumes:
+  uptime-kuma-data:
+  scrutiny-influxdb:
+  scrutiny-config:
+  jellystat-db:
+  jellystat-backup:
+  ntfy-cache:
+  ntfy-lib:
+  paperless-redis:
+  paperless-db:
+  paperless-data:
+  paperless-media:
+  paperless-export:
+  paperless-consume:

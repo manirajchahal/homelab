@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly fstrim of LXC guests (LVM-thin reclaim)
+
+[Timer]
+# Sunday 05:30 - clear of the 03:00 vzdump, the 04:30 arr missing-search
+# and the 05:00 Jellyfin transcode sweep.
+OnCalendar=Sun *-*-* 05:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Discard unused blocks in LXC guests back to the LVM-thin pool
+Documentation=man:pct(1)
+After=pve-guests.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/pve-fstrim.sh
+IOSchedulingClass=idle
+Nice=19

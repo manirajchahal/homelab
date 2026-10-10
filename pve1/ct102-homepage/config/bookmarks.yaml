@@ -1,0 +1,16 @@
+---
+- Infrastructure:
+    - Proxmox:
+        - abbr: PVE
+          href: https://192.168.4.53:8006
+    - Tailscale:
+        - abbr: TS
+          href: https://login.tailscale.com/admin/machines
+
+- Reference:
+    - TRaSH Guides:
+        - abbr: TRA
+          href: https://trash-guides.info
+    - Homepage Docs:
+        - abbr: HP
+          href: https://gethomepage.dev/configs/services/
